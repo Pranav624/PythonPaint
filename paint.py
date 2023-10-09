@@ -73,4 +73,63 @@ class PaintApp:
         self.clear_button = ttk.Button(self.tool_frame, text="Clear Canvas", command=self.clear_canvas)
         self.clear_button.pack(seide=tk.TOP, padx=5, pady=5)
 
-        
+        def setup_events(self):
+            self.canvas.bind("<B1-Motion>", self.draw)
+            self.canvas.bind("<ButtonRelease-1>", self.release)
+
+        def select_pen_tool(self):
+            self.selected_tool = "pen"
+
+        def select_eraser_tool(self):
+            self.selected_tool = "eraser"
+
+        def select_size(self, size):
+            self.selected_size = size
+
+        def select_color(self, color):
+            self.selected_color = color
+
+        def select_pen_type(self, pen_type):
+            self.selected_pen_type = pen_type
+
+        def draw(self, event):
+            if self.selected_tool == "pen":
+                if self.prev_x is not None and self.prev_y is not None:
+                    if self.selected_pen_type == "line":
+                        self.canvas.create_line(self.prev_x, self.prev_y, event.x, event.y, fill=self.selected_color, 
+                                                width=self.selected_size, smooth=True)
+                    elif self.selected_pen_type == "round":
+                        x1 = event.x - self.selected_size
+                        y1 = event.y - self.selected_size
+                        x2 = event.x + self.selected_size
+                        y2 = event.y + self.selected_size
+                        self.canvas.create_oval(x1, y1, x2, y2, fill=self.selected_color, outline=self.selected_color)
+                    elif self.selected_pen_type == "square":
+                        x1 = event.x - self.selected_size
+                        y1 = event.y - self.selected_size
+                        x2 = event.x + self.selected_size
+                        y2 = event.y + self.selected_size
+                        self.canvas.create_rectangle(x1, y1, x2, y2, fill=self.selected_color, outline=self.selected_color)
+                    elif self.selected_pen_type == "arrow":
+                        x1 = event.x - self.selected_size
+                        y1 = event.y - self.selected_size
+                        x2 = event.x + self.selected_size
+                        y2 = event.y + self.selected_size
+                        self.canvas.create_polygon(x1, y1, x2, y2, event.x, y2, fill=self.selected_color, outline=self.selected_color)
+                    elif self.selected_pen_type == "diamond":
+                        x1 = event.x - self.selected_size
+                        y1 = event.y
+                        x2 = event.x
+                        y2 = event.y - self.selected_size
+                        x3 = event.x + self.selected_size
+                        y3 = event.y
+                        x4 = event.x
+                        y4 = event.y + self.selected_size
+                        self.canvas.create_oval(x1, y1, x2, y2, x3, y3, x4, y4, fill=self.selected_color, outline=self.selected_color)
+                
+                self.prev_x = event.x
+                self.prev_y = event.y
+
+        def release(self, event):
+            self.prev_x = None
+            self.prev_y = None
